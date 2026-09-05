@@ -83,7 +83,7 @@ exclude = [
 
 [workspace.dependencies]
 # 版本目录：成员引用后才真正生效
-tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs"] }
 # rt-multi-thread 提供多线程运行时，macros 提供 #[tokio::main] / #[tokio::test]
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
