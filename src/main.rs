@@ -2,13 +2,13 @@
 //!
 //! 可执行入口：初始化日志、收口错误、把结果写到 stdout，业务逻辑在 `src/lib.rs`。
 
-use anyhow::Context;
-use ecosystem::{ConfigError, load_port};
+use std::io::{self, Write as _};
+
+use anyhow::Context as _;
+use ecosystem::{Config, ConfigError, load_config, parse_mode};
 use tracing::{info, warn};
 
 mod telemetry;
-
-const DEFAULT_PORT: u16 = 8080;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -18,16 +18,39 @@ async fn main() -> anyhow::Result<()> {
         .nth(1)
         .unwrap_or_else(|| "config.toml".to_owned());
 
-    let port = match load_port(&path).await {
-        Ok(port) => port,
+    let mut config = match load_config(&path).await {
+        Ok(config) => config,
         Err(ConfigError::NotFound { path }) => {
-            warn!(path = %path.display(), "配置文件不存在, 使用默认端口");
-            DEFAULT_PORT
+            warn!(path = %path.display(), "配置文件不存在, 使用默认配置");
+            Config::default()
         }
+        // 其余错误（格式错、端口为 0、读不了）说明用户表态了但出了问题 → 报错退出
         Err(err) => return Err(err).with_context(|| format!("加载配置 {path} 失败")),
     };
 
-    info!("port is : {port}");
+    // 命令行给了模式就覆盖配置文件里的：CLI 优先级高于配置文件
+    if let Some(raw) = std::env::args().nth(2) {
+        config.mode = parse_mode(&raw).context("命令行给的运行模式无法识别")?;
+    }
+
+    info!(?config, "配置已加载");
+    print_line(&format!(
+        "port = {}, mode = {}, log_level = {:?}",
+        config.port, config.mode, config.log_level,
+    ))
+    .context("写入 stdout 失败")?;
 
     Ok(())
+}
+
+/// 把一行结果写到 stdout。
+///
+/// 下游管道提前关闭（`BrokenPipe`）时视为正常结束，其余写失败照常返回错误。
+fn print_line(line: &str) -> io::Result<()> {
+    let mut out = io::stdout().lock();
+    // 写入后立即 flush，让写失败在这里就返回
+    match writeln!(out, "{line}").and_then(|()| out.flush()) {
+        Err(err) if err.kind() == io::ErrorKind::BrokenPipe => Ok(()),
+        other => other,
+    }
 }

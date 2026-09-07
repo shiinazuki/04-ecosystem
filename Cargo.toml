@@ -92,6 +92,9 @@ thiserror = "2"
 # thiserror 用来定义领域错误类型
 anyhow = "1"
 # anyhow 只给应用层用，见 src/main.rs
+strum = { version = "0.28.0", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+toml = "1"
 
 [dependencies]
 # 本 crate 的运行时依赖写在这一段（到下一个 [ ] 表头为止）
@@ -104,6 +107,9 @@ thiserror = { workspace = true }
 # 领域错误类型见 src/error.rs
 anyhow = { workspace = true }
 # main 用它收口，配合 .context() 补充上下文
+strum = { workspace = true }
+serde = { workspace = true }
+toml = { workspace = true }
 
 [dev-dependencies]
 # 只在测试 / benchmark / example 里用到的依赖，不会进使用者的依赖树
