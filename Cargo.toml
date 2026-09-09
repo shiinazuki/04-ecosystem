@@ -95,6 +95,8 @@ anyhow = "1"
 strum = { version = "0.28.0", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
 toml = "1"
+bytes = "1"
+tokio-util = { version = "0.7", features = ["codec"] }
 
 [dependencies]
 # 本 crate 的运行时依赖写在这一段（到下一个 [ ] 表头为止）
@@ -111,7 +113,10 @@ strum = { workspace = true }
 serde = { workspace = true }
 toml = { workspace = true }
 
+
 [dev-dependencies]
+bytes = { workspace = true }
+tokio-util = { workspace = true }
 # 只在测试 / benchmark / example 里用到的依赖，不会进使用者的依赖树
 
 # `just unused`（cargo-machete）的误报放行名单
