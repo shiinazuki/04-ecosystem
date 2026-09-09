@@ -83,7 +83,15 @@ exclude = [
 
 [workspace.dependencies]
 # 版本目录：成员引用后才真正生效
-tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "time", "sync"] }
+tokio = { version = "1", features = [
+  "rt-multi-thread",
+  "macros",
+  "fs",
+  "time",
+  "sync",
+  "net",
+  "signal",
+] }
 # rt-multi-thread 提供多线程运行时，macros 提供 #[tokio::main] / #[tokio::test]
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
@@ -98,6 +106,8 @@ serde = { version = "1", features = ["derive"] }
 toml = "1"
 bytes = "1"
 tokio-util = { version = "0.7", features = ["codec"] }
+futures = "0.3"
+dashmap = "6.2"
 
 [dependencies]
 # 本 crate 的运行时依赖写在这一段（到下一个 [ ] 表头为止）
@@ -114,6 +124,8 @@ strum = { workspace = true }
 serde = { workspace = true }
 toml = { workspace = true }
 tracing-appender = { workspace = true }
+futures = { workspace = true }
+dashmap = { workspace = true }
 
 
 [dev-dependencies]
