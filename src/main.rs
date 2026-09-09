@@ -12,7 +12,7 @@ mod telemetry;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    telemetry::init("info");
+    let telemetry = telemetry::init("info").context("初始化日志失败")?;
 
     let path = std::env::args()
         .nth(1)
@@ -31,6 +31,12 @@ async fn main() -> anyhow::Result<()> {
     // 命令行给了模式就覆盖配置文件里的：CLI 优先级高于配置文件
     if let Some(raw) = std::env::args().nth(2) {
         config.mode = parse_mode(&raw).context("命令行给的运行模式无法识别")?;
+    }
+
+    if let Some(level) = config.log_level {
+        telemetry
+            .set_level(&level.to_string())
+            .context("设置日志级别失败")?;
     }
 
     info!(?config, "配置已加载");

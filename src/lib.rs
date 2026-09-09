@@ -29,8 +29,9 @@ pub struct Config {
     pub log_level: Option<LogLevel>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, strum::Display)]
 #[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
 pub enum LogLevel {
     Trace,
     Debug,
@@ -139,6 +140,7 @@ pub fn parse_config(text: &str) -> Result<Config, ConfigError> {
 ///
 /// 文件不存在返回 [`ConfigError::NotFound`]，其余读取失败返回 [`ConfigError::Io`]，
 /// 内容非法见 [`parse_config`]。
+#[tracing::instrument(skip_all, fields(path = %path.as_ref().display()))]
 pub async fn load_config(path: impl AsRef<Path>) -> Result<Config, ConfigError> {
     let path = path.as_ref();
 

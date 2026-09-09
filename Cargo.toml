@@ -86,7 +86,8 @@ exclude = [
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "time", "sync"] }
 # rt-multi-thread 提供多线程运行时，macros 提供 #[tokio::main] / #[tokio::test]
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+tracing-appender = "0.2"
 # env-filter 提供 RUST_LOG 那套运行时可调的过滤语法
 thiserror = "2"
 # thiserror 用来定义领域错误类型
@@ -112,6 +113,7 @@ anyhow = { workspace = true }
 strum = { workspace = true }
 serde = { workspace = true }
 toml = { workspace = true }
+tracing-appender = { workspace = true }
 
 
 [dev-dependencies]
